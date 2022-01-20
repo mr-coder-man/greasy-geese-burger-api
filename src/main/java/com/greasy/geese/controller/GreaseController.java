@@ -20,7 +20,7 @@ public class GreaseController {
     @Autowired
     private OrderService calculationService;
 
-    @GetMapping("/menu/items")
+    @GetMapping("/menu")
     public Menu menuItems(){
         return menu;
     }
