@@ -40,7 +40,7 @@ public class GreaseControllerTest {
     @Test
     void returnsMenuItems() throws Exception {
         MockHttpServletRequestBuilder requestBuilder
-                = get("/menu/items")
+                = get("/menu")
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder)
