@@ -1,5 +1,8 @@
 package com.greasy.geese.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greasy.geese.model.MenuItem;
+import com.greasy.geese.model.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +14,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,6 +54,30 @@ public class GreaseControllerTest {
         itemsListExpected.forEach(item -> {
             assert(responseAsString.contains(item));
         });
+    }
+
+    @Test
+    void orderRequestCalculatedAndReturnsOrder() throws Exception {
+        // post request because we're creating something, and sending a body
+        // technically it could be POST, PUT or PATCH but really POST makes the most
+        // sense here
+        MockHttpServletRequestBuilder requestBuilder
+                = post("/order")
+                .content(new ObjectMapper()
+                        .writeValueAsString(
+                                OrderRequest.builder()
+                                        .menuItems(Collections.singletonList(
+                                                MenuItem.builder()
+                                                        .menuItemName("Single Cheese Burger")
+                                                        .menuItemPrice(5.00)
+                                                        .build()
+                                        ))
+                                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
 }
