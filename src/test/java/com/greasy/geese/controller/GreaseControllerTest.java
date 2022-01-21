@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,18 +67,44 @@ public class GreaseControllerTest {
                 .content(new ObjectMapper()
                         .writeValueAsString(
                                 OrderRequest.builder()
-                                        .menuItems(Collections.singletonList(
-                                                MenuItem.builder()
-                                                        .menuItemName("Single Cheese Burger")
-                                                        .menuItemPrice(5.00)
-                                                        .build()
-                                        ))
+                                        .menuItems(Arrays.asList(MenuItem.builder()
+                                                .menuItemName("Single Cheese Burger")
+                                                .menuItemPrice(5.00)
+                                                .build(),MenuItem.builder()
+                                                .menuItemName("Double Cheese Burger")
+                                                .menuItemPrice(7.25)
+                                                .build())
+                                        )
                                         .build()))
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andReturn();
+        String responseAsString = result.getResponse().getContentAsString();
+        assert(responseAsString.contains("12.25"));
+        assert(responseAsString.contains("Single Cheese Burger"));
+        assert(responseAsString.contains("Double Cheese Burger"));
+    }
+
+    @Test
+    void orderRequestCalculatedAndReturnsZeroWhenNoItemsOnOrder() throws Exception {
+        // post request because we're creating something, and sending a body
+        // technically it could be POST, PUT or PATCH but really POST makes the most
+        // sense here
+        MockHttpServletRequestBuilder requestBuilder
+                = post("/order")
+                .content(new ObjectMapper()
+                        .writeValueAsString(
+                                OrderRequest.builder()
+                                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseAsString = result.getResponse().getContentAsString();
+        assert(responseAsString.contains("0"));
     }
 
 }
