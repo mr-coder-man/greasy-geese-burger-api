@@ -97,6 +97,7 @@ public class GreaseControllerTest {
                 .content(new ObjectMapper()
                         .writeValueAsString(
                                 OrderRequest.builder()
+                                        // notice we didn't add any items to the order
                                         .build()))
                 .contentType(MediaType.APPLICATION_JSON);
 
