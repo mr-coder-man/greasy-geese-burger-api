@@ -24,7 +24,7 @@ public class GreaseController {
     }
 
     @GetMapping("/menu")
-    private Menu menuItems(){
+    public Menu menuItems(){
         return menu;
     }
 
